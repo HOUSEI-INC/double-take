@@ -10,7 +10,7 @@
             v-if="firstSetup"
             type="password"
             v-model="verifyPassword"
-            placeholder="Confirm Password111"
+            placeholder="Confirm Password"
             @keyup.enter="login"
             class="p-d-block p-mt-1"
           />

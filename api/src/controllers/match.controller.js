@@ -14,7 +14,7 @@ const format = async (matches) => {
   matches = await Promise.all(
     matches.map(async (obj) => {
       const { id, filename, event, response, isTrained } = obj;
-      const { camera, type, zones, updatedAt } = JSON.parse(event);
+      const { id: eventId, camera, type, zones, updatedAt } = JSON.parse(event);
       const key = `matches/${filename}`;
       const { width, height } = await sizeOf(
         fs.createReadStream(`${STORAGE.MEDIA.PATH}/${key}`)
@@ -22,6 +22,7 @@ const format = async (matches) => {
 
       return {
         id,
+        eventId,
         camera,
         type,
         zones,
@@ -123,6 +124,7 @@ module.exports.get = async (req, res) => {
 
 module.exports.delete = async (req, res) => {
   const { ids } = req.body;
+  console.log(req.body);
   if (ids.length) {
     const db = database.connect();
     const files = db

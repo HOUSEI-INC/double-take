@@ -1,3 +1,4 @@
+/* eslint-disable */
 module.exports = {
   root: true,
   parserOptions: {
@@ -23,6 +24,7 @@ module.exports = {
 
     'no-restricted-syntax': ['off', 'ForOfStatement'],
     'no-await-in-loop': 'off',
+    'no-unused-vars': 'off',
 
     // Vue rules (mostly to enforce airbnb in <template>)
     'vue/no-unused-components': process.env.PRE_COMMIT ? 'error' : 'warn',
@@ -47,6 +49,7 @@ module.exports = {
     'vue/space-infix-ops': 'error',
     'vue/space-unary-ops': 'error',
     'vue/v-on-function-call': 'error',
+    'vue/no-deprecated-slot-attribute': 'off',
     'vue/v-slot-style': [
       'error',
       {

@@ -53,6 +53,14 @@ module.exports.init = async () => {
     )`
     ).run();
 
+    db.prepare(
+      `CREATE TABLE IF NOT EXISTS user (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name,
+        createdAt TIMESTAMP
+    )`
+    ).run();
+
     db.prepare(`DELETE FROM train WHERE meta IS NULL`).run();
 
     await this.resync.files();

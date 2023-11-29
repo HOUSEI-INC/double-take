@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const { UI } = require('./constants')();
 require('express-async-errors');
 
@@ -9,6 +10,8 @@ app.use('*', cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(require('./middlewares/respond'));
+
+app.use(bodyParser.json());
 
 app.use(
   UI.PATH,

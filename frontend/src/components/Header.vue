@@ -307,7 +307,7 @@ export default {
       show: false,
       loading: false,
     },
-    folder: null,
+    folder: 'Ma',
     folders: [],
     filters: {
       names: [],

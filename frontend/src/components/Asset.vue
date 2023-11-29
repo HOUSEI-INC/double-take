@@ -8,7 +8,8 @@
               class="pi pi-external-link"
               @click="
                 openLink(
-                  `${constants().api}/storage/${asset.file.key}?box=true${asset.token ? `&token=${asset.token}` : ''}`,
+                  // `${constants().api}/storage/${asset.file.key}?box=true${asset.token ? `&token=${asset.token}` : ''}`,
+                  `http://localhost:5000/api/events/${asset.eventId}/clip.mp4`,
                 )
               "
             ></i>

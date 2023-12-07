@@ -66,6 +66,7 @@
         <Column :exportable="false" style="min-width: 8rem">
           <template v-slot:body="slotProps">
             <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="toUserProfile(slotProps.data)" />
+            <Button icon="pi pi-info" outlined rounded class="mr-2" @click="showUserTimeline(slotProps.data)" />
             <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteUser(slotProps.data)" />
           </template>
         </Column>
@@ -114,6 +115,19 @@
         <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedUsers" />
       </template>
     </Dialog>
+
+    <Dialog
+      v-model:visible="timelineDialog"
+      :style="{ width: '450px' }"
+      header="Timeline"
+      :modal="true"
+      class="p-fluid"
+      maximizable
+    >
+      <div class="user-timeline">
+        <TimeLine :username="username" />
+      </div>
+    </Dialog>
   </div>
 </template>
 
@@ -135,19 +149,25 @@ import Textarea from 'primevue/textarea';
 import RadioButton from 'primevue/radiobutton';
 import InputNumber from 'primevue/inputnumber';
 import { useRouter } from 'vue-router';
+import VueNextTimeline from 'vue-next-timeline';
+import hzqingVueTimeline from 'hzqing-vue-timeline';
+import VueHorizontalTimeline from 'vue-horizontal-timeline';
 import { UserService } from '../services/user.service';
 import Constants from '@/util/constants.util';
 import ApiService from '@/services/api.service';
+import TimeLine from '@/components/TimeLine.vue';
 
 const toast = useToast();
 const dt = ref();
 const users = ref();
+const timelineDialog = ref(false);
 const userDialog = ref(false);
 const deleteUserDialog = ref(false);
 const deleteUsersDialog = ref(false);
 const user = ref({});
 const selectedUsers = ref();
 const router = useRouter();
+const username = ref();
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -191,7 +211,7 @@ const toUserProfile = (data) => {
   user.value = { ...data };
   router.push({
     name: 'Train',
-    params: { name: data.name },
+    query: { name: data.name },
   });
 };
 const confirmDeleteUser = (prod) => {
@@ -233,6 +253,12 @@ const deleteSelectedUsers = async () => {
     toast.add({ severity: 'failed', summary: 'Failed', detail: 'delete Failed', life: 3000 });
     throw new Error('Failed to delete data');
   }
+};
+
+const showUserTimeline = (data) => {
+  console.log('data', data);
+  timelineDialog.value = true;
+  username.value = data.name;
 };
 
 const getStatusLabel = (status) => {

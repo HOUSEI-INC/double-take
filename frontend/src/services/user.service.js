@@ -31,6 +31,31 @@ export const UserService = {
     return result;
   },
 
+  async getUserTimeline(username, range) {
+    const res = await ApiService.get('user/timeline', {
+      params: {
+        username: username.toLowerCase(),
+        range,
+      },
+    });
+    const results = [];
+    const { timelines } = res.data;
+    for (const timeline of timelines) {
+      const { id, filename, event, response, createdAt } = timeline;
+      const { camera } = JSON.parse(event);
+      const date = new Date(createdAt)
+      const localTime = date.toLocaleString()
+      // const image = await ApiService.get(`/storage/matches/${filename}`);
+
+      // const content = `
+      //   <div class="content-time">${createdAt}</div>
+      //   <div class="content-image">${image}</div>
+      // `;
+      results.push({ title: camera, content: localTime });
+    }
+    return results;
+  },
+
   getProductsWithOrdersSmall() {
     return Promise.resolve(this.getProductsWithOrdersData().slice(0, 10));
   },

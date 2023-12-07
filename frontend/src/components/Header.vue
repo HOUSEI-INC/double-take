@@ -19,7 +19,7 @@
     </div>
     <div v-else class="p-d-flex p-jc-between">
       <div class="p-d-inline-flex p-ai-center">
-        <div class="p-mr-2">
+        <div v-if="type !== 'train'" class="p-mr-2">
           <Dropdown
             v-model="folder"
             :options="folders"
@@ -125,6 +125,7 @@
             <MultiSelect
               v-model="selected.names"
               :options="dropdowns.names"
+              filter
               v-on:change="emitter.emit('updateFilter')"
               @show="fixSelectPanel(true, 0)"
               @hide="fixSelectPanel(false)"
@@ -140,7 +141,7 @@
             </MultiSelect>
           </div>
         </div>
-        <div class="p-col custom-col-sm">
+        <!-- <div class="p-col custom-col-sm">
           <div class="p-fluid">
             <label class="p-d-block p-mb-1">Match</label>
             <MultiSelect
@@ -181,7 +182,7 @@
               </template>
             </MultiSelect>
           </div>
-        </div>
+        </div> -->
         <div class="p-col custom-col">
           <div class="p-fluid">
             <label class="p-d-block p-mb-1">Camera</label>
@@ -204,6 +205,11 @@
           </div>
         </div>
         <div class="p-col custom-col">
+          <div class="p-fluid">
+            <label class="p-d-block p-mb-1">DateTime</label>
+          </div>
+        </div>
+        <!-- <div class="p-col custom-col">
           <div class="p-fluid">
             <label class="p-d-block p-mb-1">Type</label>
             <MultiSelect
@@ -270,7 +276,7 @@
               "
             />
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -307,7 +313,7 @@ export default {
       show: false,
       loading: false,
     },
-    folder: 'Ma',
+    folder: null,
     folders: [],
     filters: {
       names: [],
@@ -337,6 +343,9 @@ export default {
     socket: Object,
   },
   mounted() {
+    if (this.$props.type === 'train') {
+      this.folder = this.$route.query.name;
+    }
     const settings = JSON.parse(localStorage.getItem('filter-settings')) || { socket: true, bar: false };
     if (settings && 'socket' in settings) this.filterSettings.socket.enabled = settings.socket;
     if (settings && 'bar' in settings && this.type === 'match') this.filterSettings.bar = settings.bar;
@@ -432,7 +441,8 @@ export default {
             $this.createFolder.loading = true;
             const { data } = await ApiService.get('filesystem/folders');
             $this.emitter.emit('folders', data);
-            $this.folders = ['add new', ...data];
+            // $this.folders = ['add new', ...data];
+            $this.folders = [...data];
             $this.createFolder.loading = false;
           } catch (error) {
             $this.emitter.emit('error', error);

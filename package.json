@@ -31,5 +31,13 @@
     "husky": "^8.0.1",
     "nodemon": "^2.0.16",
     "prettier": "^2.6.2"
+  },
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "hzqing-vue-timeline": "^1.0.3",
+    "vue-avatar": "^2.3.3",
+    "vue-horizontal-timeline": "^0.12.0",
+    "vue-light-timeline": "^1.0.3",
+    "vue-next-timeline": "^0.2.1"
   }
 }

@@ -101,10 +101,7 @@ export default {
     },
   },
   created() {
-    // console.log('old trainingFolder', this.trainingFolder);
-    // console.log('this route', this.$route);
-    // this.trainingFolder = this.$route.params.name;
-    // console.log('new trainingFolder', this.trainingFolder);
+    console.log('this route', this.$route);
 
     this.emitter.on('trainingFolder', (value) => {
       console.log('train', value);

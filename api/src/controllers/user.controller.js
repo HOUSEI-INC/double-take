@@ -38,3 +38,49 @@ module.exports.add = async (req, res) => {
   db.prepare('INSERT INTO user (name) VALUES (?)').run(name);
   res.send({ success: true });
 };
+
+module.exports.timeline = async (req, res) => {
+  const { username, range } = req.query;
+  const db = database.connect();
+  let data = [];
+  if (!range) {
+    data = db
+      .prepare(
+        `SELECT match.*
+        FROM match
+        JOIN (
+            SELECT m.id
+            FROM match m,
+            json_each(m.response) r,
+            json_each(json_extract(r.value, '$.results')) res
+            WHERE json_extract(res.value, '$.name') = ?
+        ) filtered ON match.id = filtered.id
+        ORDER BY match.createdAt DESC`
+      )
+      .all(username);
+  } else {
+    const currentDate = new Date();
+    const daysAgo = new Date();
+    daysAgo.setDate(currentDate.getDate() - range);
+
+    const computedDate = daysAgo.toISOString().split('T')[0];
+
+    data = db
+      .prepare(
+        `SELECT match.*
+        FROM match
+        JOIN (
+            SELECT m.id
+            FROM match m,
+            json_each(m.response) r,
+            json_each(json_extract(r.value, '$.results')) res
+            WHERE json_extract(res.value, '$.name') = ?
+        ) filtered ON match.id = filtered.id
+        WHERE date(match.createdAt) BETWEEN date(?) AND date('now','utc')
+        ORDER BY match.createdAt DESC`
+      )
+      .all(username, computedDate);
+  }
+
+  res.send({ timelines: data });
+};

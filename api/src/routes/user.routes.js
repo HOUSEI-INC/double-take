@@ -9,4 +9,5 @@ router
   .post('/add/:name', jwt, controller.add)
   .delete('/remove', jwt, controller.delete);
 
+router.get('/timeline', jwt, controller.timeline);
 module.exports = router;

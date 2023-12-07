@@ -16,7 +16,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "config" */ '@/views/Config.vue'),
   },
   {
-    path: '/train/:name',
+    path: '/train',
     name: 'Train',
     meta: {
       title: 'Train',
@@ -48,6 +48,13 @@ const routes = [
     path: '/users',
     meta: {
       title: 'Users',
+    },
+    component: () => import('@/views/Users.vue'),
+  },
+  {
+    path: '/timeline',
+    meta: {
+      title: 'TimeLine',
     },
     component: () => import('@/views/Users.vue'),
   },

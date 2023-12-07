@@ -1,0 +1,112 @@
+mqtt:
+  host: emqx
+  port: 1883
+detectors:
+  detector1:
+    type: cpu
+birdseye:
+  enabled: True
+  mode: objects
+  width: 1280
+  height: 720
+objects:
+  track:
+    - person
+#    - car
+#    - motorcyle
+#    - cat
+#    - dog
+# Optional: list of objects to track from labelmap.txt (default: shown below)
+ffmpeg:
+  output_args:
+    record: -f segment -segment_time 10  -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
+cameras:
+  init:
+    enabled: False
+    mqtt:
+      enabled: True
+      timestamp: False
+      bounding_box: False
+      crop: True
+      quality: 100
+      height: 500
+    ffmpeg:
+      inputs:
+        - path: test
+          roles:
+            - detect
+            - rtmp
+            - record
+  test0:
+    mqtt:
+      enabled: True
+      timestamp: False
+      bounding_box: False
+      crop: True
+      quality: 100
+      height: 500
+    ffmpeg:
+      inputs:
+        - path: rtsp://172.29.243.79:554
+          roles:
+            - detect
+            - rtmp
+            - record
+  test1:
+    mqtt:
+      enabled: True
+      timestamp: False
+      bounding_box: False
+      crop: True
+      quality: 100
+      height: 500
+    ffmpeg:
+      inputs:
+        - path: rtsp://172.29.243.61:554/ch01/0
+          roles:
+            - detect
+            - rtmp
+            - record
+  # test2:
+  #   mqtt:
+  #     enabled: True
+  #     timestamp: False
+  #     bounding_box: False
+  #     crop: True
+  #     quality: 100
+  #     height: 500
+  #   ffmpeg:
+  #     inputs:
+  #       - path: rtsp://172.29.243.91:554/rtsp/streaming?channel=01&subtype=0
+  #         roles:
+  #           - detect
+  #           - rtmp
+  #           - record
+  # test3:
+  #   mqtt:
+  #     enabled: True
+  #     timestamp: False
+  #     bounding_box: False
+  #     crop: True
+  #     quality: 100
+  #     height: 500
+  #   ffmpeg:
+  #     inputs:
+  #       - path: rtsp://172.29.243.74:554/main
+  #         roles:
+  #         - detect
+  #         - rtmp
+  #         - record
+detect:
+  height: 720
+  width: 1280
+  fps: 5
+record:
+  enabled:
+    True
+    # Optional: timeout for highest scoring image before allowing it
+    # to be replaced by a newer image. (default: shown below)
+  retain:
+    days: 30
+snapshots:
+  enabled: True

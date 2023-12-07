@@ -1,0 +1,64 @@
+mqtt:
+  host: emqx
+
+  topics:
+    # mqtt topic for frigate message subscription
+    frigate: frigate/events
+    # mqtt topic where matches are published by name
+    matches: double-take/matches
+    # mqtt topic where matches are published by camera name
+    cameras: double-take/cameras
+detect:
+  match:
+    # save match images
+    save: true
+    # include base64 encoded string in api results and mqtt messages
+    # options: true, false, box
+    base64: false
+    # minimum confidence needed to consider a result a match
+    confidence: 60
+    # hours to keep match images until they are deleted
+    purge: 168
+    # minimum area in pixels to consider a result a match
+    min_area: 1000
+
+  unknown:
+    # save unknown images
+    save: true
+    # include base64 encoded string in api results and mqtt messages
+    # options: true, false, box
+    base64: false
+    # minimum confidence needed before classifying a name as unknown
+    confidence: 40
+    # hours to keep unknown images until they are deleted
+    purge: 8
+    # minimum area in pixels to keep an unknown result
+    min_area: 0
+
+frigate:
+  url: http://frigate:5000
+
+  # object labels that are allowed for facial recognition
+  labels:
+    - person
+
+  attempts:
+    # number of times double take will request a frigate snapshot.jpg for facial recognition
+    snapshot: 1
+    # process frigate images from frigate/+/person/snapshot topics
+    mqtt: false
+    # add a delay expressed in seconds between each detection loop
+    delay: 0
+
+  image:
+    # height of frigate image passed for facial recognition
+    height: 500
+
+  # only process images from specific cameras
+  cameras:
+    - test0
+    # - garage
+
+detectors:
+  deepstack:
+    url: http://deepstack:5000

@@ -1,0 +1,40 @@
+{
+  "name": "double-take",
+  "version": "1.13.1",
+  "description": "Unified UI and API for processing and training images for facial recognition",
+  "scripts": {
+    "prepare": "husky install",
+    "frontend": "cd ./frontend && npm run serve",
+    "api": "exec nodemon -e yml,js --watch ./.storage/config --watch ./api -q api/server.js || true",
+    "bump": "npm version $VERSION --no-git-tag-version --allow-same-version && cd ./api && npm version $VERSION --no-git-tag-version --allow-same-version && cd ../frontend && npm version $VERSION --no-git-tag-version --allow-same-version",
+    "lint:eslint": "eslint --fix",
+    "lint:prettier": "prettier --write --loglevel warn"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jakowenko/double-take.git"
+  },
+  "author": "David Jakowenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jakowenko/double-take/issues"
+  },
+  "homepage": "https://github.com/jakowenko/double-take#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.2",
+    "@commitlint/config-conventional": "^17.0.2",
+    "eslint": "^8.17.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.1",
+    "nodemon": "^2.0.16",
+    "prettier": "^2.6.2"
+  },
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "vue-avatar": "^2.3.3",
+    "vue-horizontal-timeline": "^0.12.0"
+  }
+}

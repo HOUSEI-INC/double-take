@@ -1,0 +1,14 @@
+version: '3.7'
+
+volumes:
+  double-take:
+
+services:
+  double-take:
+    container_name: double-take
+    image: jakowenko/double-take
+    restart: unless-stopped
+    volumes:
+      - double-take:/.storage
+    ports:
+      - 3000:3000

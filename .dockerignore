@@ -1,0 +1,9 @@
+*
+
+!.build/entrypoint.sh
+!frontend/*
+!api/*
+
+*/node_modules
+*/.DS_Store
+api/.*

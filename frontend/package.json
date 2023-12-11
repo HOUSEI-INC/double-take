@@ -1,0 +1,75 @@
+{
+  "name": "double-take-frontend",
+  "version": "1.13.1",
+  "description": "Unified UI and API for processing and training images for facial recognition",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jakowenko/double-take.git"
+  },
+  "author": "David Jakowenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jakowenko/double-take/issues"
+  },
+  "homepage": "https://github.com/jakowenko/double-take#readme",
+  "dependencies": {
+    "ace-builds": "^1.5.3",
+    "axios": "^0.27.2",
+    "copy-to-clipboard": "^3.3.1",
+    "luxon": "^2.4.0",
+    "mitt": "^3.0.0",
+    "primeflex": "^2.0.0",
+    "primeicons": "^5.0.0",
+    "primevue": "^3.43.0",
+    "prismjs": "^1.28.0",
+    "probe-image-size": "^7.2.3",
+    "pulltorefreshjs": "^0.1.22",
+    "socket.io-client": "^4.5.1",
+    "v-lazy-image": "^2.1.1",
+    "v-pagination-3": "^0.1.7",
+    "vue": "^3.2.37",
+    "vue-avatar": "^2.3.3",
+    "vue-horizontal-timeline": "^0.12.0",
+    "vue-router": "^4.0.15",
+    "vue3-ace-editor": "^2.2.2"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.18.2",
+    "@vue/cli-plugin-babel": "^5.0.4",
+    "@vue/cli-plugin-eslint": "^5.0.4",
+    "@vue/cli-service": "^5.0.4",
+    "@vue/compiler-sfc": "^3.2.37",
+    "@vue/eslint-config-airbnb": "^6.0.0",
+    "@vue/eslint-config-prettier": "^7.0.0",
+    "eslint": "^8.17.0",
+    "eslint-plugin-vue": "^9.1.0",
+    "file-loader": "^6.2.0",
+    "node-sass": "^7.0.1",
+    "prettier": "^2.8.3",
+    "sass-loader": "^13.0.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

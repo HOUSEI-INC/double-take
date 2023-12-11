@@ -1,0 +1,13 @@
+.DS_Store
+node_modules
+
+# frontend
+frontend/dist
+
+# api
+.storage
+
+# local env files
+.env.*.local
+config.yml
+frigate/config/*

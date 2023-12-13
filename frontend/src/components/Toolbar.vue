@@ -1,6 +1,8 @@
 <template>
   <div class="tool-bar-wrapper p-pr-3 p-d-flex p-jc-between p-ai-center" ref="toolbar">
-    <div><TabMenu :model="navigation" class="navigation" :class="{ show: showNavigation }" /></div>
+    <div>
+      <TabMenu :model="navigation" @tab-change="tabChange" class="navigation" :class="{ show: showNavigation }" />
+    </div>
     <div v-if="updateAvailable" class="version p-ml-auto p-mr-2" v-tooltip.left="`Update Available`">
       <div class="icon" @click="dockerHub"></div>
     </div>
@@ -158,6 +160,10 @@ export default {
   methods: {
     getHeight() {
       return this.$refs.toolbar.clientHeight;
+    },
+    tabChange(val) {
+      const to = `/${this.navigation[val.index].label.toLowerCase()}`;
+      this.$router.push(to);
     },
     async updatePassword() {
       try {

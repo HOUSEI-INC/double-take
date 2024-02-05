@@ -478,6 +478,6 @@ img.thumbnail {
 .reprocess-btn {
   position: absolute;
   bottom: 0;
-  right: 1;
+  right: 0;
 }
 </style>

@@ -676,6 +676,3 @@ compreface_key: <api-key>
 ## Donations
 
 If you would like to make a donation to support development, please use [GitHub Sponsors](https://github.com/sponsors/jakowenko).
-
-
-commit test

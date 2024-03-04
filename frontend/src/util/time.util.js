@@ -18,7 +18,7 @@ export default {
     const dateTime = DateTime.fromISO(ISO);
     const diff = dateTime.diffNow().shiftTo(...units);
     const unit = units.find((u) => diff.get(u) !== 0) || 'second';
-    const relativeFormatter = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+    const relativeFormatter = new Intl.RelativeTimeFormat('ja', { numeric: 'auto' });
     return relativeFormatter.format(Math.trunc(diff.as(unit)), unit);
   },
 };

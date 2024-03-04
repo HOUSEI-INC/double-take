@@ -27,9 +27,12 @@ import ApiService from '@/services/api.service';
 
 const props = defineProps(['username']);
 const selectedRange = ref();
+const timeLineData = ref([]);
 
 onMounted(() => {
-  UserService.getUserTimeline(props.username).then((data) => (timeLineData.value = data));
+  UserService.getUserTimeline(props.username).then((data) => {
+    timeLineData.value = data;
+  });
 });
 
 const filterOpts = ref([
@@ -42,8 +45,8 @@ const filterOpts = ref([
 ]);
 
 const handleChange = async () => {
-  UserService.getUserTimeline(props.username, selectedRange.value.range).then((data) => (timeLineData.value = data));
+  UserService.getUserTimeline(props.username, selectedRange.value.range).then((data) => {
+    timeLineData.value = data;
+  });
 };
-
-const timeLineData = ref([]);
 </script>

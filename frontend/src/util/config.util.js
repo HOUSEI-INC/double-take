@@ -1,3 +1,5 @@
+import { publicIpv4 } from 'public-ip';
+
 const yaml = require('js-yaml');
 
 export default {
@@ -16,5 +18,10 @@ export default {
       console.error('Error updating cameras field:', error);
       return null;
     }
+  },
+  getLocalIpAddress: async () => {
+    const ip = await publicIpv4();
+    console.log(ip);
+    return ip;
   },
 };

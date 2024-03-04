@@ -57,6 +57,8 @@ module.exports.init = async () => {
       `CREATE TABLE IF NOT EXISTS user (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name,
+        staffNum,
+        department,
         createdAt TIMESTAMP
     )`
     ).run();

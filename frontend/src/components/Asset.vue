@@ -44,7 +44,7 @@
       <template v-slot:content>
         <div v-if="type === 'match'">
           <DataTable :value="results" class="p-datatable-sm" responsiveLayout="scroll">
-            <Column header="Detector">
+            <Column header="検知器">
               <template v-slot:body="slotProps">
                 <div class="p-d-block" style="position: relative">
                   <Badge
@@ -64,7 +64,7 @@
                 </div>
               </template>
             </Column>
-            <Column field="name" header="Name"></Column>
+            <Column field="name" header="氏名"></Column>
             <Column header="%">
               <template v-slot:body="slotProps">
                 <div
@@ -77,7 +77,7 @@
                 <div v-else>{{ slotProps.data.confidence || '-' }}</div>
               </template>
             </Column>
-            <Column header="Box">
+            <Column header="ボックス">
               <template v-slot:body="slotProps">
                 <div
                   v-if="getCheckValue('box area', slotProps.data.checks)"
@@ -143,7 +143,7 @@
               v-tooltip.right="formatTime(asset.updatedAt)"
               style="cursor: pointer"
             >
-              {{ updatedAt ? `(updated ${updatedAt.ago})` : '' }}
+              {{ updatedAt ? `(${updatedAt.ago}更新)` : '' }}
             </small>
             <small v-if="type === 'train'">{{ asset.name }}</small>
           </div>
@@ -152,8 +152,9 @@
             :icon="reprocessing ? 'pi pi-spin pi-spinner' : 'pi pi-refresh'"
             class="reprocess-btn p-button-sm"
             @click="reprocess"
-            v-tooltip.right="'Reprocess Image'"
+            v-tooltip.right="'画像を再処理する'"
           />
+          <SearchUnknown v-if="type === 'match'" :fileKey="asset.file.key" />
         </div>
       </template>
     </Card>
@@ -173,6 +174,7 @@ import Dropdown from 'primevue/dropdown';
 import Time from '@/util/time.util';
 import Constants from '@/util/constants.util';
 import ApiService from '@/services/api.service';
+import SearchUnknown from '@/components/SearchUnknown.vue';
 
 export default {
   props: {
@@ -192,6 +194,7 @@ export default {
     Dropdown,
     Button,
     VLazyImage,
+    SearchUnknown,
   },
   data: () => ({
     timestamp: Date.now(),

@@ -77,10 +77,10 @@ export default {
       verify: null,
     },
     navigation: [
-      { label: 'Matches', icon: 'pi pi-fw fa fa-portrait', to: '/' },
-      { label: 'Train', icon: 'pi pi-fw fa fa-images', to: '/train' },
-      { label: 'Config', icon: 'pi pi-fw pi-cog', to: '/config' },
-      { label: 'Users', icon: 'pi pi-fw pi-user', to: '/users' },
+      { label: 'マッチ', icon: 'pi pi-fw fa fa-portrait', to: '/' },
+      { label: 'トレーン', icon: 'pi pi-fw fa fa-images', to: '/train' },
+      { label: '設定', icon: 'pi pi-fw pi-cog', to: '/config' },
+      { label: 'ユーザ', icon: 'pi pi-fw pi-user', to: '/users' },
     ],
     menu: [],
     unauthorizedMenu: [
@@ -162,7 +162,7 @@ export default {
       return this.$refs.toolbar.clientHeight;
     },
     tabChange(val) {
-      const to = `/${this.navigation[val.index].label.toLowerCase()}`;
+      const to = `${this.navigation[val.index].to}`;
       this.$router.push(to);
     },
     async updatePassword() {

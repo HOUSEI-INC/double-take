@@ -106,6 +106,19 @@ const handleSearch = async () => {
   console.log(ids);
   visible.value = false;
   emitter.emit('compareFacesInRange', ids);
+  if (AddStaffAfterSearch.value) {
+    const fd = new FormData();
+    fd.append('files[]', file);
+    await ApiService.post(`filesystem/folders/${staff.value.name}`);
+    await ApiService.post(`train/add/${staff.name}`, formData);
+    await ApiService.post('/user/add', {
+      data: {
+        name: staff.name,
+        staffNum: staff.num,
+        department: staff.department,
+      },
+    });
+  }
 };
 
 const afterHideSearchUnknownDialog = () => {

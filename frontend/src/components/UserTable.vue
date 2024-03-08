@@ -51,7 +51,7 @@
           <template v-slot:body="slotProps">
             <img
               v-if="slotProps.data.fileKey"
-              :src="`http://localhost:3000/api/storage/${slotProps.data.fileKey}`"
+              :src="imageUrl(slotProps.data.fileKey)"
               :alt="slotProps.data.fileKey"
               class="shadow-2 border-round"
               style="width: 64px"
@@ -163,7 +163,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'primevue/usetoast';
 import DataTable from 'primevue/datatable';
@@ -215,6 +215,8 @@ onMounted(async () => {
   users.value = data;
   store.setUsers(users.value);
 });
+
+const imageUrl = computed((fileKey) => `http://${Constants().sshHost}:3000/api/storage/${fileKey}`);
 
 const openNew = () => {
   user.value = {};
@@ -336,15 +338,11 @@ const uploadUserDataFromCsv = async (event) => {
   reader.readAsArrayBuffer(file);
   reader.onloadend = async () => {
     const data = reader.result;
-    const result = await workbook.xlsx.load(data);
-    console.log(result);
+    await workbook.xlsx.load(data);
     const worksheet = workbook.getWorksheet(1);
-    console.log(worksheet);
     const images = worksheet.getImages();
-    console.log(images);
     const postData = [];
     worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-      console.log(`Row ${rowNumber} = ${JSON.stringify(row.values)}`);
       if (rowNumber === 1) {
         return;
       }

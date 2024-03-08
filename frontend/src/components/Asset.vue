@@ -9,7 +9,7 @@
               @click="
                 openLink(
                   // `${constants().api}/storage/${asset.file.key}?box=true${asset.token ? `&token=${asset.token}` : ''}`,
-                  `http://localhost:5000/api/events/${asset.eventId}/clip.mp4`,
+                  frigateEventUrl,
                 )
               "
             ></i>
@@ -295,6 +295,9 @@ export default {
     updatedAt() {
       if (!this.asset.updatedAt) return null;
       return { ago: this.agoTime(this.asset.updatedAt), timestamp: this.timestamp };
+    },
+    frigateEventUrl() {
+      return `http://${Constants().sshHost}:5000/api/events/${this.asset.eventId}/clip.mp4`;
     },
   },
   watch: {

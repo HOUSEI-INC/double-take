@@ -8,4 +8,5 @@ export default () => ({
     process.env.NODE_ENV === 'production'
       ? { path: window.ingressUrl || window.publicPath ? `${window.ingressUrl || window.publicPath}/socket.io/` : '' }
       : `${window.location.origin.replace(':8080', ':3000')}`,
+  sshHost: `${process.env.VUE_APP_SSH_HOST}`,
 });

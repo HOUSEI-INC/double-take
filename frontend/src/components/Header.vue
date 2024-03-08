@@ -1,8 +1,9 @@
+/* eslint-disable */
 <template>
   <div class="header-wrapper p-shadow-5 p-pl-3 p-pr-3" ref="header" :style="{ top: toolbarHeight + 'px' }">
     <div v-if="createFolder.show" class="p-d-inline-flex p-ai-center">
       <div class="p-mr-2">
-        <InputText type="text" v-model="createFolder.name" @keyup.enter="create().folder()" placeholder="folder name" />
+        <InputText type="text" v-model="createFolder.name" @keyup.enter="create().folder()" placeholder="フォルダ名" />
       </div>
       <div>
         <Button
@@ -19,7 +20,7 @@
     </div>
     <div v-else class="p-d-flex p-jc-between">
       <div class="p-d-inline-flex p-ai-center">
-        <div class="p-mr-2">
+        <!-- <div v-if="type !== 'train'" class="p-mr-2">
           <Dropdown
             v-model="folder"
             :options="folders"
@@ -27,7 +28,7 @@
             :showClear="true"
             :class="{ train: type === 'train' }"
           />
-        </div>
+        </div> -->
         <div v-if="type === 'match' && !folder">
           <FileUpload
             mode="basic"
@@ -39,7 +40,7 @@
             @before-send="beforeUpload"
             :auto="true"
             :multiple="true"
-            chooseLabel="Upload"
+            chooseLabel="アップロード"
             :disabled="loading.files || loading.status"
             class="p-button-sm"
           />
@@ -49,7 +50,7 @@
             <Button
               class="responsive-button p-button-success p-button-sm"
               icon="pi pi-check"
-              label="Train"
+              label="トレーン"
               :disabled="matches.selected.length === 0 || !folder"
               @click="$parent.train"
             />
@@ -66,7 +67,7 @@
                 @before-send="beforeUpload"
                 :auto="true"
                 :multiple="true"
-                chooseLabel="Upload"
+                chooseLabel="アップロード"
                 :disabled="loading.files || loading.status"
                 class="p-button-sm"
               />
@@ -75,14 +76,16 @@
               icon="fa fa-recycle push-top"
               class="responsive-button p-button-success p-button-sm p-ml-1"
               @click="$parent.sync"
-              label="Sync"
+              label="同期"
               :disabled="!matches.source.filter((obj) => obj.name === folder).length"
             />
             <Button
               class="responsive-button p-button-danger p-button-sm p-ml-1"
               icon="pi pi-trash"
               :label="
-                matches.source.filter((obj) => obj.name === folder && obj.results.length).length ? 'Untrain' : 'Remove'
+                matches.source.filter((obj) => obj.name === folder && obj.results.length).length
+                  ? 'アントレーン'
+                  : '削除'
               "
               @click="
                 matches.source.filter((obj) => obj.name === folder && obj.results.length).length
@@ -121,10 +124,11 @@
         </div>
         <div class="p-col custom-col">
           <div class="p-fluid">
-            <label class="p-d-block p-mb-1">Name</label>
+            <label class="p-d-block p-mb-1">氏名</label>
             <MultiSelect
               v-model="selected.names"
               :options="dropdowns.names"
+              filter
               v-on:change="emitter.emit('updateFilter')"
               @show="fixSelectPanel(true, 0)"
               @hide="fixSelectPanel(false)"
@@ -140,7 +144,7 @@
             </MultiSelect>
           </div>
         </div>
-        <div class="p-col custom-col-sm">
+        <div class="p-col custom-col-sm" style="display: none">
           <div class="p-fluid">
             <label class="p-d-block p-mb-1">Match</label>
             <MultiSelect
@@ -161,7 +165,7 @@
             </MultiSelect>
           </div>
         </div>
-        <div class="p-col custom-col">
+        <div class="p-col custom-col" style="display: none">
           <div class="p-fluid">
             <label class="p-d-block p-mb-1">Detector</label>
             <MultiSelect
@@ -184,7 +188,7 @@
         </div>
         <div class="p-col custom-col">
           <div class="p-fluid">
-            <label class="p-d-block p-mb-1">Camera</label>
+            <label class="p-d-block p-mb-1">カメラ</label>
             <MultiSelect
               v-model="selected.cameras"
               :options="dropdowns.cameras"
@@ -203,7 +207,21 @@
             </MultiSelect>
           </div>
         </div>
-        <div class="p-col custom-col">
+        <div class="p-col custom-col" style="width: 25%">
+          <div class="p-fluid">
+            <label class="p-d-block p-mb-1">日時</label>
+            <Calendar
+              v-model="filters.datetime"
+              selectionMode="range"
+              :manualInput="false"
+              showTime
+              showButtonBar
+              @clear-click="handleDateTimeClear"
+              @hide="emitter.emit('updateFilter')"
+            />
+          </div>
+        </div>
+        <div class="p-col custom-col" style="display: none">
           <div class="p-fluid">
             <label class="p-d-block p-mb-1">Type</label>
             <MultiSelect
@@ -224,7 +242,7 @@
             </MultiSelect>
           </div>
         </div>
-        <div class="p-col custom-col-xsm">
+        <div class="p-col custom-col-xsm" style="display: none">
           <div class="p-fluid">
             <label class="p-d-block p-mb-1" v-tooltip.left="'Minimum confidence (%)'">%</label>
             <InputText
@@ -243,7 +261,7 @@
             />
           </div>
         </div>
-        <div class="p-col custom-col-xsm">
+        <div class="p-col custom-col-xsm" style="display: none">
           <div class="p-fluid">
             <label class="p-d-block p-mb-1" v-tooltip.left="'Minimum box height (pixels)'">Width</label>
             <InputText
@@ -257,7 +275,7 @@
             />
           </div>
         </div>
-        <div class="p-col custom-col-xsm">
+        <div class="p-col custom-col-xsm" style="display: none">
           <div class="p-fluid">
             <label class="p-d-block p-mb-1" v-tooltip.left="'Minimum box width (pixels)'">Height</label>
             <InputText
@@ -282,6 +300,7 @@ import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import MultiSelect from 'primevue/multiselect';
+import Calendar from 'primevue/calendar';
 import SpeedDial from '@/components/SpeedDial.vue';
 
 import Constants from '@/util/constants.util';
@@ -295,6 +314,7 @@ export default {
     MultiSelect,
     FileUpload,
     SpeedDial,
+    Calendar,
   },
   data: () => ({
     speedDial: [],
@@ -318,6 +338,7 @@ export default {
       confidence: 0,
       width: 0,
       height: 0,
+      datetime: [],
     },
     selected: {},
     socketClass: 'p-badge-secondary',
@@ -351,12 +372,26 @@ export default {
         },
       },
       {
+        label: 'Reprocess',
+        icon: 'pi pi-sync',
+        command: () => {
+          if (this.type === 'match') this.$parent.checkfaceagain();
+        },
+      },
+      {
         label: 'Refresh',
         icon: 'pi pi-refresh',
         command: () => {
           if (this.loading.files || this.loading.status) return;
           if (this.type === 'match') this.$parent.get().matches({ delay: 500 });
           if (this.type === 'train') this.$parent.init();
+        },
+      },
+      {
+        label: 'Export Record',
+        icon: 'pi pi-download',
+        command: () => {
+          if (this.type === 'match') this.$parent.exportRecord();
         },
       },
       {
@@ -378,8 +413,16 @@ export default {
     ];
 
     if (this.type === 'train') {
-      const index = this.speedDial.findIndex(({ label }) => label.toLowerCase() === 'filters');
-      if (index > -1) this.speedDial.splice(index, 1);
+      this.folder = this.$route.query.name;
+
+      const labelsToRemove = ['filters', 'reprocess', 'export record'];
+
+      for (const labelToRemove of labelsToRemove) {
+        const index = this.speedDial.findIndex(({ label }) => label.toLowerCase() === labelToRemove);
+        if (index > -1) {
+          this.speedDial.splice(index, 1);
+        }
+      }
     }
 
     if (this.socket) {
@@ -432,7 +475,8 @@ export default {
             $this.createFolder.loading = true;
             const { data } = await ApiService.get('filesystem/folders');
             $this.emitter.emit('folders', data);
-            $this.folders = ['add new', ...data];
+            // $this.folders = ['add new', ...data];
+            $this.folders = [...data];
             $this.createFolder.loading = false;
           } catch (error) {
             $this.emitter.emit('error', error);
@@ -493,6 +537,15 @@ export default {
     getFilters() {
       return this.filters;
     },
+    handleDateTimeClear() {
+      this.filters.datetime = [];
+    },
+    handleDateTimeChange() {
+      // const date = new Date(this.filters.datetime[0]);
+      // const convertDate = date.toISOString();
+      // console.log(convertDate);
+      console.log('filters', this.filters);
+    },
   },
   watch: {
     'filterSettings.socket': {
@@ -517,6 +570,11 @@ export default {
       const target = this.speedDial.find(({ label }) => label.toLowerCase() === 'refresh');
       target.icon = value ? 'pi pi-spin pi-spinner' : 'pi pi-refresh';
     },
+    // // eslint-disable-next-line func-names
+    // checkingunknown(value) {
+    //   const target = this.speedDial.find(({ label }) => label.toLowerCase() === 'reprocess');
+    //   target.icon = value ? 'pi pi-spin pi-spinner' : 'pi pi-sync';
+    // },
     areAllSelected(value) {
       const target = this.speedDial.find(({ label }) => label.toLowerCase() === 'toggle all');
       target.icon = value ? 'fa fa-check-square' : 'far fa-check-square';
@@ -652,7 +710,8 @@ export default {
     width: 16.5%;
     flex: 0 0 auto;
     @media screen and (max-width: 1000px) {
-      width: 25% !important;
+      // width: 25% !important;
+      width: 25%;
     }
   }
   .custom-col-sm {

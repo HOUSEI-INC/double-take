@@ -19,7 +19,7 @@ services:
     container_name: double-take-api
     entrypoint: .develop/entrypoint.dev.sh
     depends_on:
-      - mqtt
+      - emqx
     build:
       context: ../
       dockerfile: ./.develop/Dockerfile.dev
@@ -29,11 +29,50 @@ services:
       - ..:/double-take
       - /double-take/api/node_modules
 
-  mqtt:
-    container_name: double-take-mqtt
-    restart: unless-stopped
-    image: eclipse-mosquitto
-    volumes:
-      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+  emqx:
+    container_name: emqx
+    image: emqx/emqx:latest
+    restart: always
+    environment:
+      EMQX_NAME: foo_emqx
+      EMQX_HOST: 127.0.0.1
     ports:
       - 1883:1883
+      - 18083:18083
+  frigate:
+    container_name: frigate
+    privileged: true # this may not be necessary for all setups
+    restart: unless-stopped
+    image: xingluniori/widarchive:frigate-01
+    shm_size: '256mb' # update for your cameras based on calculation above
+    devices:
+      - /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
+      # - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
+      # - /dev/dri/renderD128 # for intel hwaccel, needs to be updated for your hardware
+    volumes:
+      #   - .:/workspace/frigate:cached
+      #   - /etc/localtime:/etc/localtime:ro
+      - ../frigate/config:/config
+    #   - ./frigate/storage:/media/frigate
+    #   - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
+    #     target: /tmp/cache
+    #     tmpfs:
+    #       size: 1000000000
+    ports:
+      - '5000:5000'
+      - '8554:8554' # RTSP feeds
+      - '8555:8555/tcp' # WebRTC over tcp
+      - '8555:8555/udp' # WebRTC over udp
+    environment:
+      FRIGATE_RTSP_PASSWORD: 'password'
+
+  deepstack:
+    container_name: deepstack
+    image: deepquestai/deepstack:arm64
+    restart: unless-stopped
+    environment:
+      - VISION_FACE=True
+      - VISION_DETECTION=True
+      - MODE=High
+    ports:
+      - 5002:5000

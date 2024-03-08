@@ -63,6 +63,10 @@
           />
         </div>
         <div class="p-mr-2">
+          <label class="p-d-block p-mb-1">Cameras</label>
+          <MultiSelect v-model="cameras.current" :options="cameras.frigate" @hide="updateCameras" />
+        </div>
+        <div class="p-mr-2">
           <label class="p-d-block p-mb-1">&nbsp;</label>
           <Button
             label="config.yml"
@@ -132,6 +136,7 @@ import 'ace-builds/src-noconflict/mode-yaml';
 
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
+import MultiSelect from 'primevue/multiselect';
 import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
@@ -140,12 +145,15 @@ import Time from '@/util/time.util';
 import Sleep from '@/util/sleep.util';
 import ApiService from '@/services/api.service';
 import { version } from '../../package.json';
+import { ConfigService } from '@/services/config.service';
+import Config from '@/util/config.util';
 
 export default {
   components: {
     VAceEditor,
     Button,
     Dropdown,
+    MultiSelect,
   },
   data: () => ({
     file: 'config',
@@ -262,6 +270,10 @@ export default {
     code: '',
     loading: false,
     height: 0,
+    cameras: {
+      current: [],
+      frigate: [],
+    },
   }),
   props: {
     toolbarHeight: Number,
@@ -271,6 +283,8 @@ export default {
     this.file = new URLSearchParams(window.location.search).get('file');
   },
   async mounted() {
+    ConfigService.getFrigateCameras().then((data) => (this.cameras.frigate = data));
+    ConfigService.getCurrentCameras().then((data) => (this.cameras.current = data));
     try {
       this.updateHeight();
       await this.editorData();
@@ -490,10 +504,11 @@ export default {
     highlighter(code) {
       return highlight(code, languages.js);
     },
-    async save() {
+    async save(newYamlString) {
       try {
         if (this.loading) return;
-        await ApiService.patch(this.file === 'secrets' ? 'config/secrets' : 'config', { code: this.code });
+        const data = newYamlString || this.code;
+        await ApiService.patch(this.file === 'secrets' ? 'config/secrets' : 'config', { code: data });
         this.loading = true;
         this.waitForRestart = true;
         this.emitter.emit('toast', { message: 'Restarting to load changes' });
@@ -541,6 +556,17 @@ export default {
       } catch (error) {
         this.emitter.emit('error', error);
       }
+    },
+    async updateCameras() {
+      const currentCode = this.code;
+      const newCameras = this.cameras.current;
+      const updatedConfig = Config.updateConfigCameras(currentCode, newCameras);
+      this.save(updatedConfig);
+      // const { data } = await ApiService.get('/config');
+      // const updatedCameras = Object.values(this.cameras.current);
+      // data.frigate.cameras = updatedCameras;
+      // const configJsonString = JSON.stringify(data);
+      // await ApiService.patch('/config', { code: configJsonString });
     },
   },
 };

@@ -101,7 +101,10 @@ export default {
     },
   },
   created() {
+    console.log('this route', this.$route);
+
     this.emitter.on('trainingFolder', (value) => {
+      console.log('train', value);
       let shouldRefresh = false;
       if (value !== 'add new' && value !== null) shouldRefresh = true;
       if (value === null && this.trainingFolder !== 'add new') shouldRefresh = true;
@@ -114,6 +117,7 @@ export default {
     });
 
     this.emitter.on('folders', (value) => {
+      console.log(value);
       this.folders = value;
     });
 

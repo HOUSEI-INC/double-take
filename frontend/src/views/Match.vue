@@ -18,7 +18,7 @@
     >
       <i class="pi pi-spin pi-spinner p-as-center" style="font-size: 2.5rem"></i>
       <div v-if="showNoFiles" class="p-mt-5 p-text-center p-as-center" style="width: 100%">
-        <p class="p-text-bold p-mb-3">No files found</p>
+        <p class="p-text-bold p-mb-3">ファイルが見つかりません</p>
         <DataTable class="filter-table p-datatable-sm" :value="filterHelpText()" responsiveLayout="scroll">
           <Column>
             <template v-slot:body="slotProps">
@@ -54,6 +54,7 @@ import PullToRefresh from 'pulltorefreshjs';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 
+import Excel from 'exceljs';
 import ApiService from '@/services/api.service';
 import Grid from '@/components/Grid.vue';
 import Header from '@/components/Header.vue';
@@ -82,6 +83,7 @@ export default {
       files: false,
       createFolder: false,
       filter: false,
+      checkunknown: false,
     },
     matches: {
       source: [],
@@ -188,6 +190,10 @@ export default {
       this.clear(['source', 'selected', 'disabled', 'loaded']);
       this.get().matches();
     });
+    this.emitter.on('compareFacesInRange', async (ids) => {
+      this.clear(['source', 'selected', 'disabled', 'loaded']);
+      await this.get().matches({ matchedIds: ids });
+    });
   },
   methods: {
     clear(items) {
@@ -200,7 +206,7 @@ export default {
       return {
         async matches(options) {
           try {
-            const { filters = true, delay = 0 } = options || {};
+            const { filters = true, delay = 0, matchedIds = [] } = options || {};
             if ($this.loading.files) return;
             $this.loading.files = true;
             await Sleep(delay);
@@ -211,7 +217,7 @@ export default {
               // eslint-disable-next-line no-nested-ternary
               $this.pagination.temp > 1 ? 0 : $this.matches.source.length ? $this.matches.source[0].id : 0;
             const { data } = await ApiService.get('match', {
-              params: { page: $this.pagination.temp, sinceId, filters: $this.filters },
+              params: { page: $this.pagination.temp, sinceId, filters: $this.filters, matchedIds },
             });
             $this.pagination.limit = data.limit;
             $this.pagination.total = sinceId === 0 ? data.total : $this.pagination.total + data.matches.length;
@@ -261,7 +267,7 @@ export default {
               $this.matches.selected.length > 1 ? 'files' : 'file'
             }`;
             $this.$confirm.require({
-              header: 'Confirmation',
+              header: '確認',
               message: `Do you want to delete ${description}?`,
               acceptClass: 'p-button-danger',
               position: 'top',
@@ -348,6 +354,52 @@ export default {
     updateFilterSettings(value) {
       const settings = JSON.parse(localStorage.getItem('filter-settings')) || {};
       localStorage.setItem('filter-settings', JSON.stringify({ ...settings, ...value }));
+    },
+    async checkfaceagain() {
+      try {
+        this.loading.checkunknown = true;
+        const { data } = await ApiService.patch('user/checkfaceagain');
+        const { results } = data;
+        results.forEach((result) => {
+          this.emitter.emit('reprocess', result);
+        });
+        this.loading.checkunknown = false;
+      } catch (error) {
+        this.loading.checkunknown = false;
+        this.emitter.emit('error', error);
+      }
+    },
+    async exportRecord() {
+      const workbook = new Excel.Workbook();
+      const sheet = workbook.addWorksheet('レコード');
+      sheet.columns = [
+        { header: '氏名', key: 'name', width: 20 },
+        { header: 'カメラ', key: 'camera', width: 15 },
+        { header: '日時', key: 'datetime', width: 30 },
+      ];
+      this.matches.source.forEach(({ createdAt, camera, response }) => {
+        const { results } = response[0];
+        const names = results.map(({ name }) => name);
+        const writeToXlxsNames = names.join(' ');
+        sheet.addRow({
+          name: writeToXlxsNames,
+          camera,
+          datetime: createdAt,
+        });
+      });
+      const buffer = await workbook.xlsx.writeBuffer();
+
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      const downloadLink = document.createElement('a');
+      downloadLink.href = window.URL.createObjectURL(blob);
+      downloadLink.download = 'record.xlsx';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      URL.revokeObjectURL(downloadLink.href);
     },
   },
 };

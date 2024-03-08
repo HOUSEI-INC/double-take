@@ -8,6 +8,6 @@ frontend/dist
 .storage
 
 # local env files
-.env
 .env.*.local
 config.yml
+frigate/config/*

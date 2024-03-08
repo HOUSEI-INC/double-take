@@ -9,11 +9,13 @@
       "request": "launch",
       "runtimeExecutable": "nodemon",
       "name": "API",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/api/server.js",
       "restart": true
     }
-  ]
+  ],
+  "env": {
+    "name": "NODE_TLS_REJECT_UNAUTHORIZED",
+    "value": "1"
+  }
 }

@@ -17,6 +17,7 @@ const routes = [
   },
   {
     path: '/train',
+    name: 'Train',
     meta: {
       title: 'Train',
     },
@@ -42,6 +43,20 @@ const routes = [
       title: 'Logs',
     },
     component: () => import(/* webpackChunkName: "token" */ '@/views/Logs.vue'),
+  },
+  {
+    path: '/users',
+    meta: {
+      title: 'Users',
+    },
+    component: () => import('@/views/Users.vue'),
+  },
+  {
+    path: '/timeline',
+    meta: {
+      title: 'TimeLine',
+    },
+    component: () => import('@/views/Users.vue'),
   },
   {
     path: '/logout',

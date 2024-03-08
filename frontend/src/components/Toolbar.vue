@@ -1,6 +1,8 @@
 <template>
   <div class="tool-bar-wrapper p-pr-3 p-d-flex p-jc-between p-ai-center" ref="toolbar">
-    <div><TabMenu :model="navigation" class="navigation" :class="{ show: showNavigation }" /></div>
+    <div>
+      <TabMenu :model="navigation" @tab-change="tabChange" class="navigation" :class="{ show: showNavigation }" />
+    </div>
     <div v-if="updateAvailable" class="version p-ml-auto p-mr-2" v-tooltip.left="`Update Available`">
       <div class="icon" @click="dockerHub"></div>
     </div>
@@ -75,9 +77,10 @@ export default {
       verify: null,
     },
     navigation: [
-      { label: 'Matches', icon: 'pi pi-fw fa fa-portrait', to: '/' },
-      { label: 'Train', icon: 'pi pi-fw fa fa-images', to: '/train' },
-      { label: 'Config', icon: 'pi pi-fw pi-cog', to: '/config' },
+      { label: 'マッチ', icon: 'pi pi-fw fa fa-portrait', to: '/' },
+      { label: 'トレーン', icon: 'pi pi-fw fa fa-images', to: '/train' },
+      { label: '設定', icon: 'pi pi-fw pi-cog', to: '/config' },
+      { label: 'ユーザ', icon: 'pi pi-fw pi-user', to: '/users' },
     ],
     menu: [],
     unauthorizedMenu: [
@@ -157,6 +160,10 @@ export default {
   methods: {
     getHeight() {
       return this.$refs.toolbar.clientHeight;
+    },
+    tabChange(val) {
+      const to = `${this.navigation[val.index].to}`;
+      this.$router.push(to);
     },
     async updatePassword() {
       try {

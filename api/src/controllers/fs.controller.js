@@ -11,6 +11,8 @@ module.exports.folders = {
     if (!fs.existsSync(`${STORAGE.MEDIA.PATH}/train/${name}`)) {
       fs.mkdirSync(`${STORAGE.MEDIA.PATH}/train/${name}`);
     }
+    // const db = database.connect();
+    // db.prepare('INSERT INTO user (name) VALUES (?)').run(name);
     res.send({ success: true });
   },
   delete: async (req, res) => {

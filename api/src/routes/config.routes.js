@@ -13,6 +13,7 @@ router
     }),
     controller.get
   )
+  .get('/lanip', jwt, controller.getlanip)
   .patch('/', jwt, validate({ body: { code: Joi.string().min(0).required() } }), controller.patch)
   .get('/theme', controller.theme.get)
   .patch(

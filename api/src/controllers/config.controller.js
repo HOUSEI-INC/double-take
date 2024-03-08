@@ -1,4 +1,5 @@
 const fs = require('fs');
+const os = require('os');
 const yaml = require('js-yaml');
 const yamlTypes = require('../util/yaml-types.util');
 const redact = require('../util/redact-secrets.util');
@@ -61,4 +62,21 @@ module.exports.patch = async (req, res) => {
     if (error.name === 'YAMLException') return res.status(BAD_REQUEST).send(error);
     res.send(error);
   }
+};
+
+module.exports.getlanip = (req, res) => {
+  const networkInterfaces = os.networkInterfaces();
+
+  // 遍历接口列表找到 IPv4 地址
+  Object.keys(networkInterfaces).forEach((interfaceName) => {
+    const interfaces = networkInterfaces[interfaceName];
+    interfaces.forEach((interfaceInfo) => {
+      // 过滤出 IPv4 地址
+      if (interfaceInfo.family === 'IPv4' && !interfaceInfo.internal) {
+        console.log(`Interface: ${interfaceName} - IPv4: ${interfaceInfo.address}`);
+      }
+    });
+  });
+
+  res.send({});
 };

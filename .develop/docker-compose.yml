@@ -9,11 +9,10 @@ services:
     build:
       context: ../
       dockerfile: ./.develop/Dockerfile.dev
+    env_file:
+      - .env
     ports:
       - 8080:8080
-    volumes:
-      - ..:/double-take
-      - /double-take/frontend/node_modules
 
   api:
     container_name: double-take-api
@@ -26,9 +25,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ..:/double-take
-      - /double-take/api/node_modules
-
+      - mnt/sdcard/dt/storage:/.storage
   emqx:
     container_name: emqx
     image: emqx/emqx:latest
@@ -39,25 +36,27 @@ services:
     ports:
       - 1883:1883
       - 18083:18083
+
   frigate:
     container_name: frigate
     privileged: true # this may not be necessary for all setups
     restart: unless-stopped
-    image: xingluniori/widarchive:frigate-01
+    image: xingluniori/widarchive:frigate-boxpc
+    env_file:
+      - .env
     shm_size: '256mb' # update for your cameras based on calculation above
     devices:
       - /dev/bus/usb:/dev/bus/usb # passes the USB Coral, needs to be modified for other versions
-      # - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
-      # - /dev/dri/renderD128 # for intel hwaccel, needs to be updated for your hardware
+      - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
+      - /dev/dri/renderD128 # for intel hwaccel, needs to be updated for your hardware
     volumes:
-      #   - .:/workspace/frigate:cached
-      #   - /etc/localtime:/etc/localtime:ro
-      - ../frigate/config:/config
-    #   - ./frigate/storage:/media/frigate
-    #   - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
-    #     target: /tmp/cache
-    #     tmpfs:
-    #       size: 1000000000
+      - /etc/localtime:/etc/localtime:ro
+      - mnt/sdcard/frigate/config:/config
+      - mnt/sdcard/frigate/storage:/media/frigate
+      - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
     ports:
       - '5000:5000'
       - '8554:8554' # RTSP feeds
@@ -74,5 +73,7 @@ services:
       - VISION_FACE=True
       - VISION_DETECTION=True
       - MODE=High
+    volumes:
+      - mnt/sdcard/deepstack/storage:/datastore
     ports:
       - 5002:5000

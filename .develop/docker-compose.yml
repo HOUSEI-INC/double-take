@@ -13,6 +13,9 @@ services:
       - .env
     ports:
       - 8080:8080
+    volumes:
+      - ..:/double-take
+      - /double-take/frontend/node_modules
 
   api:
     container_name: double-take-api
@@ -26,6 +29,9 @@ services:
       - 3000:3000
     volumes:
       - mnt/sdcard/dt/storage:/.storage
+      - ..:/double-take
+      - /double-take/api/node_modules
+
   emqx:
     container_name: emqx
     image: emqx/emqx:latest

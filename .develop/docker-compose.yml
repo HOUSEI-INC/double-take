@@ -28,7 +28,6 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - /mnt/sdcard/dt/storage:/.storage
       - ..:/double-take
       - /double-take/api/node_modules
 
@@ -57,8 +56,6 @@ services:
       - /dev/dri/renderD128 # for intel hwaccel, needs to be updated for your hardware
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /mnt/sdcard/frigate/config:/config
-      - /mnt/sdcard/frigate/storage:/media/frigate
       - type: tmpfs # Optional: 1GB of memory, reduces SSD/SD Card wear
         target: /tmp/cache
         tmpfs:
@@ -79,7 +76,5 @@ services:
       - VISION_FACE=True
       - VISION_DETECTION=True
       - MODE=High
-    volumes:
-      - /mnt/sdcard/deepstack/storage:/datastore
     ports:
       - 5002:5000

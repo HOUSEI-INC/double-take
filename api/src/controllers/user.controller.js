@@ -48,12 +48,17 @@ module.exports.add = async (req, res) => {
   //   fs.mkdirSync(`${STORAGE.MEDIA.PATH}/train/${name}`);
   // }
   const db = database.connect();
-  db.prepare('INSERT INTO user (name, staffNum, department) VALUES (?, ?, ?)').run(
-    name,
-    staffNum,
-    department
-  );
-  res.send({ success: true });
+  try {
+    db.prepare('INSERT INTO user (name, staffNum, department) VALUES (?, ?, ?)').run(
+      name,
+      staffNum,
+      department
+    );
+    res.send({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.send({ success: false });
+  }
 };
 
 module.exports.timeline = async (req, res) => {

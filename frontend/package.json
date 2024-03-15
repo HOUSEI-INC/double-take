@@ -29,7 +29,7 @@
     "pinia": "^2.1.7",
     "primeflex": "^2.0.0",
     "primeicons": "^5.0.0",
-    "primevue": "^3.43.0",
+    "primevue": "3.39.0",
     "prismjs": "^1.28.0",
     "probe-image-size": "^7.2.3",
     "public-ip": "^6.0.1",

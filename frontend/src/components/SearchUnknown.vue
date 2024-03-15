@@ -43,7 +43,7 @@
     </div>
     <template v-slot:footer>
       <Button label="Cancel" outlined @click="visible = false" />
-      <Button label="Search" outlined @click="handleSearch" />
+      <Button label="Search" outlined @click="handleSearch" :loading="searchBtnLoading" icon="pi pi-search" />
     </template>
   </Dialog>
 </template>
@@ -55,10 +55,13 @@ import InputSwitch from 'primevue/inputswitch';
 import InputText from 'primevue/inputtext';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
+import { useToast } from 'primevue/usetoast';
 import ImageUploader from '@/components/ImageUploader.vue';
 import ApiService from '@/services/api.service';
 
 const { emitter } = getCurrentInstance().appContext.config.globalProperties;
+
+const toast = useToast();
 
 const visible = ref(false);
 const UploaderRef = ref();
@@ -93,19 +96,27 @@ const getSelectedFile = (file) => {
   selectedFile.value = file;
 };
 
+const searchBtnLoading = ref(false);
 const handleSearch = async () => {
+  searchBtnLoading.value = true;
   const file = UploaderRef.value.files[0];
   const fname = file.name;
   const formData = new FormData();
   formData.append('image', file, fname);
-  const { data } = await ApiService.post('/user/savetmpimg', formData);
-  const { filename } = data;
-  const compareFaceResults = await ApiService.post('/user/comparetwofaces', { fn: filename, dates: dates.value });
-  console.log(compareFaceResults);
-  const { ids } = compareFaceResults.data;
-  console.log(ids);
-  visible.value = false;
-  emitter.emit('compareFacesInRange', ids);
+
+  try {
+    const { data } = await ApiService.post('/user/savetmpimg', formData);
+    const { filename } = data;
+    const compareFaceResults = await ApiService.post('/user/comparetwofaces', { fn: filename, dates: dates.value });
+    console.log(compareFaceResults);
+    const { ids } = compareFaceResults.data;
+    console.log(ids);
+    visible.value = false;
+    emitter.emit('compareFacesInRange', ids);
+  } catch (error) {
+    toast.add({ severity: 'failed', summary: 'Failed', detail: 'Search Failed', life: 3000 });
+    throw new Error('Failed to search unknown');
+  }
   if (AddStaffAfterSearch.value) {
     const fd = new FormData();
     fd.append('files[]', file);
@@ -119,6 +130,7 @@ const handleSearch = async () => {
       },
     });
   }
+  searchBtnLoading.value = false;
 };
 
 const afterHideSearchUnknownDialog = () => {

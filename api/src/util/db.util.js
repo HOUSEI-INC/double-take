@@ -34,7 +34,7 @@ module.exports.init = async () => {
       `CREATE TABLE IF NOT EXISTS train (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         fileId INTEGER,
-        name,
+        name TEXT UNIQUE,
         filename,
         detector,
         meta JSON,

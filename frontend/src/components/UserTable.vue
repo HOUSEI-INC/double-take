@@ -101,7 +101,7 @@
       </div>
       <template v-slot:footer>
         <Button label="キャンセル" icon="pi pi-times" text @click="hideDialog" />
-        <Button label="保存" icon="pi pi-check" text @click="saveUser" />
+        <Button label="保存" icon="pi pi-check" text @click="saveUser" :loading="saveUserBtnLoading" />
       </template>
     </Dialog>
 
@@ -109,8 +109,7 @@
       <div class="confirmation-content">
         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
         <span v-if="user"
-          >Are you sure you want to delete <b>{{ user.name }}</b
-          >?</span
+          ><b>{{ user.name }}</b> 削除してもよろしいですか?</span
         >
       </div>
       <template v-slot:footer>
@@ -126,7 +125,7 @@
       </div>
       <template v-slot:footer>
         <Button label="いいえ" icon="pi pi-times" text @click="deleteUsersDialog = false" />
-        <Button label="はい" icon="pi pi-check" text @click="deleteSelectedUsers" />
+        <Button label="はい" icon="pi pi-check" text @click="deleteSelectedUsers" :loading="delUsersBtnLoading" />
       </template>
     </Dialog>
 
@@ -211,12 +210,19 @@ const filters = ref({
 const submitted = ref(false);
 
 onMounted(async () => {
+  console.log(Constants().sshHost);
   const data = await UserService.getUsers();
   users.value = data;
   store.setUsers(users.value);
 });
 
-const imageUrl = computed((fileKey) => `http://${Constants().sshHost}:3000/api/storage/${fileKey}`);
+// const imageUrl = computed((fileKey) => `http://${Constants().sshHost}:3000/api/storage/${fileKey}`);
+const imageUrl = computed(
+  () =>
+    function (fileKey) {
+      return `http://${Constants().sshHost}:3000/api/storage/${fileKey}`;
+    },
+);
 
 const openNew = () => {
   user.value = {};
@@ -228,8 +234,11 @@ const hideDialog = () => {
   userDialog.value = false;
   submitted.value = false;
 };
+
+const saveUserBtnLoading = ref(false);
 const saveUser = async () => {
   submitted.value = true;
+  saveUserBtnLoading.value = true;
   if (!user.value.id) {
     try {
       const files = [];
@@ -247,6 +256,10 @@ const saveUser = async () => {
           department: user.value.department,
         },
       });
+      saveUserBtnLoading.value = false;
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       toast.add({ severity: 'failed', summary: 'Failed', detail: 'Add New Failed', life: 3000 });
       throw new Error('Failed to add data');
@@ -298,16 +311,20 @@ const deleteUser = async () => {
 const confirmDeleteSelected = () => {
   deleteUsersDialog.value = true;
 };
+
+const delUsersBtnLoading = ref(false);
 const deleteSelectedUsers = async () => {
   const names = [];
   selectedUsers.value.forEach((ele) => {
     names.push(ele.name);
   });
   try {
+    delUsersBtnLoading.value = true;
     await ApiService.delete('/user/remove', { data: { names } });
     users.value = users.value.filter((val) => !selectedUsers.value.includes(val));
     deleteUsersDialog.value = false;
     selectedUsers.value = null;
+    delUsersBtnLoading.value = false;
   } catch (error) {
     toast.add({ severity: 'failed', summary: 'Failed', detail: 'delete Failed', life: 3000 });
     throw new Error('Failed to delete data');

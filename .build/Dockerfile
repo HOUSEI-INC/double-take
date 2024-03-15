@@ -36,5 +36,6 @@ COPY /.build/entrypoint.sh .
 FROM ubuntu:20.04
 COPY --from=build . .
 ENV NODE_ENV=production
+EXPOSE 3000
 WORKDIR /double-take
 ENTRYPOINT ["/bin/bash", "./entrypoint.sh"]

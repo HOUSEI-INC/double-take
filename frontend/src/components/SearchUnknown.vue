@@ -108,10 +108,7 @@ const handleSearch = async () => {
     const { data } = await ApiService.post('/user/savetmpimg', formData);
     const { filename } = data;
     const compareFaceResults = await ApiService.post('/user/comparetwofaces', { fn: filename, dates: dates.value });
-    console.log(compareFaceResults);
     const { ids } = compareFaceResults.data;
-    console.log(ids);
-    visible.value = false;
     emitter.emit('compareFacesInRange', ids);
   } catch (error) {
     toast.add({ severity: 'failed', summary: 'Failed', detail: 'Search Failed', life: 3000 });
@@ -120,17 +117,20 @@ const handleSearch = async () => {
   if (AddStaffAfterSearch.value) {
     const fd = new FormData();
     fd.append('files[]', file);
-    await ApiService.post(`filesystem/folders/${staff.value.name}`);
-    await ApiService.post(`train/add/${staff.name}`, formData);
-    await ApiService.post('/user/add', {
-      data: {
-        name: staff.name,
-        staffNum: staff.num,
-        department: staff.department,
-      },
-    });
+    await Promise.all([
+      ApiService.post('/user/add', {
+        data: {
+          name: staff.name,
+          staffNum: staff.num,
+          department: staff.department,
+        },
+      }),
+      ApiService.post(`filesystem/folders/${staff.value.name}`),
+      ApiService.post(`user/trainUserImg/${staff.value.name}`, formData),
+    ]);
   }
   searchBtnLoading.value = false;
+  visible.value = false;
 };
 
 const afterHideSearchUnknownDialog = () => {

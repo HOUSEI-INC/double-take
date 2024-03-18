@@ -1,6 +1,13 @@
 /* eslint-disable */
 <template>
   <div>
+    <div v-if="pageLoading" class="page-loading">
+      <div
+        style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2000"
+      >
+        <i class="pi pi-spin pi-spinner p-as-center" style="font-size: 2.5rem"></i>
+      </div>
+    </div>
     <div class="card">
       <Toolbar class="mb-4">
         <template v-slot:start>
@@ -152,8 +159,9 @@
             mode="basic"
             customUpload
             accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            :maxFileSize="1000000"
-            @uploader="uploadUserDataFromCsv"
+            :maxFileSize="20971520"
+            @uploader="uploadUserDataFromXlsx"
+            chooseLabel="選択"
           />
         </div>
       </div>
@@ -175,6 +183,7 @@ import OverlayPanel from 'primevue/overlaypanel';
 import Toolbar from 'primevue/toolbar';
 import { useRouter } from 'vue-router';
 import Excel from 'exceljs';
+import ProgressSpinner from 'primevue/progressspinner';
 import ImageUploader from '@/components/ImageUploader.vue';
 import { UserService } from '../services/user.service';
 import ApiService from '@/services/api.service';
@@ -240,41 +249,44 @@ const saveUser = async () => {
   submitted.value = true;
   saveUserBtnLoading.value = true;
   if (!user.value.id) {
-    try {
-      const files = [];
-      files.push(selectedFile.value);
-      const formData = new FormData();
-      files.forEach((file) => {
-        formData.append('files[]', file);
-      });
-      await ApiService.post(`filesystem/folders/${user.value.name}`);
-      await ApiService.post(`train/add/${user.value.name}`, formData);
-      await ApiService.post('/user/add', {
+    const files = [];
+    files.push(selectedFile.value);
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append('files[]', file);
+    });
+    await Promise.all([
+      ApiService.post('/user/add', {
         data: {
           name: user.value.name,
           staffNum: user.value.staffNum,
           department: user.value.department,
         },
-      });
-      saveUserBtnLoading.value = false;
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-    } catch (error) {
+      }),
+      ApiService.post(`filesystem/folders/${user.value.name}`),
+      ApiService.post(`user/trainUserImg/${user.value.name}`, formData),
+    ]).catch((err) => {
       toast.add({ severity: 'failed', summary: 'Failed', detail: 'Add New Failed', life: 3000 });
-      throw new Error('Failed to add data');
-    }
-  } else {
-    await ApiService.post('/user/updateuser', {
-      data: {
-        id: user.value.id,
-        staffNum: user.value.staffNum,
-        department: user.value.department,
-      },
+      throw new Error(err);
     });
+  } else {
+    try {
+      await ApiService.post('/user/updateuser', {
+        data: {
+          id: user.value.id,
+          staffNum: user.value.staffNum,
+          department: user.value.department,
+        },
+      });
+    } catch (error) {
+      toast.add({ severity: 'failed', summary: 'Failed', detail: 'Update Failed', life: 3000 });
+      throw new Error(error);
+    }
   }
+  saveUserBtnLoading.value = false;
   userDialog.value = false;
   user.value = {};
+  window.location.reload();
 };
 const toUserProfile = (data) => {
   router.push({
@@ -348,7 +360,8 @@ const openUpload = (event) => {
   op.value.toggle(event);
 };
 
-const uploadUserDataFromCsv = async (event) => {
+const pageLoading = ref(false);
+const uploadUserDataFromXlsx = async (event) => {
   const workbook = new Excel.Workbook();
   const file = event.files[0];
   const reader = new FileReader();
@@ -366,8 +379,9 @@ const uploadUserDataFromCsv = async (event) => {
       images.forEach((image, index) => {
         const { range } = image;
         const thisRowNum = rowNumber - 1;
-        if (thisRowNum >= range.tl.nativeRow && thisRowNum <= range.br.nativeRow) {
-          const img = workbook.getImage(index);
+        // if (thisRowNum >= range.tl.nativeRow && thisRowNum <= range.br.nativeRow) {
+        if (thisRowNum === range.tl.nativeRow) {
+          const img = workbook.getImage(image.imageId);
           const thisRowData = {
             name: row.values[1],
             staffNum: row.values[2],
@@ -378,18 +392,22 @@ const uploadUserDataFromCsv = async (event) => {
         }
       });
     });
+    pageLoading.value = true;
+    op.value.hide();
     await ApiService.post('/user/adduserbyxlxs', { data: { postData } });
+    pageLoading.value = false;
+    window.location.reload();
   };
 };
 
 const downloadTemplate = async () => {
-  const path = '/template/template.csv';
+  const path = '/template/template.xlsx';
   const csvData = await fetch(path);
   const blob = await csvData.blob();
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'template.csv';
+  link.download = 'template.xlsx';
   document.body.appendChild(link);
   link.click();
   URL.revokeObjectURL(blob);
@@ -433,7 +451,7 @@ const exportUserDataByXlxs = async () => {
       });
 
       // 计算图片的左上角和右下角的坐标以插入单元格,分别为左上角纵横，右下角纵横坐标
-      const tlCol = index + 3.8;
+      const tlCol = 3.8;
       const tlRow = index + 1.2;
       const brCol = tlCol + 0.6;
       const brRow = tlRow + 0.6;
@@ -470,6 +488,16 @@ const exportUserDataByXlxs = async () => {
   padding: 2rem;
   border-radius: 10px;
   margin-bottom: 1rem;
+}
+
+.page-loading {
+  position: fixed; /* 固定定位 */
+  top: 0; /* 距离顶部距离为 0 */
+  left: 0; /* 距离左侧距离为 0 */
+  width: 100%; /* 宽度为整个窗口宽度 */
+  height: 100%; /* 高度为整个窗口高度 */
+  background-color: rgba(233, 230, 230, 0.5); /* 半透明的灰色背景 */
+  z-index: 1000; /* 确保遮罩层在其他内容之上 */
 }
 
 .op-content {

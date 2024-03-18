@@ -5,6 +5,7 @@ const FormData = require('form-data');
 const database = require('../util/db.util');
 const { resync } = require('../util/db.util');
 const myfs = require('../util/fs.util');
+const time = require('../util/time.util');
 
 const { STORAGE, SERVER, UI, DETECTORS } = require('../constants')();
 // const DETECTORS = require('../constants/config').detectors();
@@ -57,6 +58,33 @@ module.exports.add = async (req, res) => {
     res.send({ success: true });
   } catch (error) {
     console.error(error);
+    res.send({ success: false });
+  }
+};
+
+module.exports.trainUserImg = async (req, res) => {
+  const { name } = req.params;
+  const files = [];
+
+  if (req.files) {
+    await Promise.all(
+      req.files.map(async (obj) => {
+        const { originalname, buffer, mimetype } = obj;
+        if (!['image/jpeg', 'image/png'].includes(mimetype)) {
+          console.warn(`training incorrect mime type: ${mimetype}`);
+          return;
+        }
+        const ext = `.${originalname.split('.').pop()}`;
+        const filename = `${originalname.replace(ext, '')}-${time.unix()}${ext}`;
+        await myfs.writer(`${STORAGE.MEDIA.PATH}/train/${name}/${filename}`, buffer);
+        files.push({ name, filename });
+      })
+    );
+  }
+  if (files.length) {
+    await train.add(name, { files });
+    res.send({ success: true });
+  } else {
     res.send({ success: false });
   }
 };
@@ -287,7 +315,7 @@ module.exports.adduserbyxlxs = async (req, res) => {
           }
           await myfs.writer(`${STORAGE.MEDIA.PATH}/train/${name}/${filename}`, buffer);
           files.push({ name, filename });
-          if (files.length) train.add(name, { files });
+          if (files.length) await train.add(name, { files });
         } catch (error) {
           console.log(error);
           console.error(`create ${name} file failed`);
@@ -304,6 +332,9 @@ module.exports.adduserbyxlxs = async (req, res) => {
         }
       }
     })
-  );
+  ).catch((err) => {
+    console.log(err);
+    res.send({ success: false });
+  });
   res.send({ success: true });
 };

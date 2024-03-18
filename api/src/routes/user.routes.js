@@ -10,6 +10,7 @@ router
   .post('/add', jwt, controller.add)
   .delete('/remove', jwt, controller.delete);
 
+router.post('/trainUserImg/:name', jwt, multer().array('files[]'), controller.trainUserImg);
 router.get('/timeline', jwt, controller.timeline);
 router.patch('/checkfaceagain', jwt, controller.checkfaceagain);
 router.post('/comparetwofaces', jwt, controller.comparetwofaces);

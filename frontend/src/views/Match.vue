@@ -19,7 +19,7 @@
       <i class="pi pi-spin pi-spinner p-as-center" style="font-size: 2.5rem"></i>
       <div v-if="showNoFiles" class="p-mt-5 p-text-center p-as-center" style="width: 100%">
         <p class="p-text-bold p-mb-3">ファイルが見つかりません</p>
-        <DataTable class="filter-table p-datatable-sm" :value="filterHelpText()" responsiveLayout="scroll">
+        <!-- <DataTable class="filter-table p-datatable-sm" :value="filterHelpText()" responsiveLayout="scroll">
           <Column>
             <template v-slot:body="slotProps">
               <strong>{{ slotProps.data.key }}</strong>
@@ -30,7 +30,7 @@
               <pre>{{ slotProps.data.value }}</pre>
             </template>
           </Column>
-        </DataTable>
+        </DataTable> -->
       </div>
     </div>
     <div class="p-d-flex p-jc-center p-flex-column" :class="isPaginationVisible ? 'pagination-padding' : ''">

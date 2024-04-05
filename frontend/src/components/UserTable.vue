@@ -372,6 +372,7 @@ const uploadUserDataFromXlsx = async (event) => {
     const worksheet = workbook.getWorksheet(1);
     const images = worksheet.getImages();
     const postData = [];
+    const formData = new FormData();
     worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
       if (rowNumber === 1) {
         return;
@@ -382,21 +383,19 @@ const uploadUserDataFromXlsx = async (event) => {
         // if (thisRowNum >= range.tl.nativeRow && thisRowNum <= range.br.nativeRow) {
         if (thisRowNum === range.tl.nativeRow) {
           const img = workbook.getImage(image.imageId);
-          const thisRowData = {
-            name: row.values[1],
-            staffNum: row.values[2],
-            department: row.values[3],
-            img,
-          };
-          postData.push(thisRowData);
+          console.log(img);
+          formData.append('name[]', row.values[1]);
+          formData.append('staffNum[]', row.values[2]);
+          formData.append('department[]', row.values[3]);
+          formData.append('image[]', new Blob([img.buffer]));
         }
       });
     });
     pageLoading.value = true;
     op.value.hide();
-    await ApiService.post('/user/adduserbyxlxs', { data: { postData } });
+    await ApiService.post('/user/adduserbyxlxs', formData);
     pageLoading.value = false;
-    window.location.reload();
+    // window.location.reload();
   };
 };
 
@@ -419,10 +418,10 @@ const exportUserDataByXlxs = async () => {
   const workbook = new Excel.Workbook();
   const sheet = workbook.addWorksheet('ユーザ一覧');
   sheet.columns = [
-    { header: '氏名', key: 'name', width: 15 },
-    { header: '社員No.', key: 'staffNum', width: 15 },
-    { header: '所属', key: 'department', width: 15 },
-    { header: '顔写真', key: 'faceImg', width: 20 },
+    { header: '氏名', key: 'name', width: 30 },
+    { header: '社員No.', key: 'staffNum', width: 30 },
+    { header: '所属', key: 'department', width: 30 },
+    { header: '顔写真', key: 'faceImg', width: 30 },
   ];
 
   await Promise.all(
@@ -460,7 +459,7 @@ const exportUserDataByXlxs = async () => {
       // const imgHeight = Math.floor(sheet.getRow(index + 2).height * 0.8);
       sheet.addImage(img, {
         tl: { col: tlCol, row: tlRow },
-        ext: { width: 100, height: 120 },
+        ext: { width: 110, height: 120 },
         editAs: 'undefined',
       });
     }),

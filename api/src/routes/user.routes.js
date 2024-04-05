@@ -16,6 +16,13 @@ router.patch('/checkfaceagain', jwt, controller.checkfaceagain);
 router.post('/comparetwofaces', jwt, controller.comparetwofaces);
 router.post('/savetmpimg', jwt, multer().single('image'), controller.savetmpimg);
 router.post('/updateuser', jwt, controller.updateuser);
-router.post('/adduserbyxlxs', jwt, controller.adduserbyxlxs);
+router.post(
+  '/adduserbyxlxs',
+  jwt,
+  multer({
+    limits: { fieldSize: 25 * 1024 * 1024 },
+  }).array('image[]'),
+  controller.adduserbyxlxs
+);
 
 module.exports = router;

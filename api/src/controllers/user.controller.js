@@ -299,16 +299,22 @@ module.exports.updateuser = async (req, res) => {
 };
 
 module.exports.adduserbyxlxs = async (req, res) => {
-  const { postData } = req.body.data;
-  const files = [];
+  // const { postData } = req.body.data;
+  const postData = req.body.name.map((item, index) => ({
+    name: item,
+    staffNum: req.body.staffNum[index],
+    department: req.body.department[index],
+    img: req.files[index],
+  }));
+  const db = database.connect();
   await Promise.all(
     postData.map(async (ele) => {
       const { img, name, staffNum, department } = ele;
       if (img) {
         const imgBuffer = img.buffer;
         const buffer = Buffer.from(imgBuffer);
-        console.log(buffer);
         const filename = `${uuidv4()}.jpg`;
+        const files = [];
         try {
           if (!fs.existsSync(`${STORAGE.MEDIA.PATH}/train/${name}`)) {
             fs.mkdirSync(`${STORAGE.MEDIA.PATH}/train/${name}`);
@@ -316,19 +322,14 @@ module.exports.adduserbyxlxs = async (req, res) => {
           await myfs.writer(`${STORAGE.MEDIA.PATH}/train/${name}/${filename}`, buffer);
           files.push({ name, filename });
           if (files.length) await train.add(name, { files });
-        } catch (error) {
-          console.log(error);
-          console.error(`create ${name} file failed`);
-        }
-        try {
-          const db = database.connect();
           db.prepare('INSERT INTO user (name, staffNum, department) VALUES (?, ?, ?)').run(
             name,
             staffNum,
             department
           );
         } catch (error) {
-          console.error('failed to write data into db');
+          console.log(error);
+          // console.error(`create ${name} file failed`);
         }
       }
     })

@@ -27,7 +27,6 @@ module.exports.getall = async (req, res) => {
 
 module.exports.delete = async (req, res) => {
   const { names } = req.body;
-  console.log(req.body);
   for (const name of names) {
     if (fs.existsSync(`${STORAGE.MEDIA.PATH}/train/${name}`)) {
       fs.rmSync(`${STORAGE.MEDIA.PATH}/train/${name}`, { recursive: true });
@@ -151,7 +150,6 @@ module.exports.checkfaceagain = async (req, res) => {
       AND match.createdAt >= datetime('now', '-3 days')`
       )
       .all();
-    console.log('unknown matches', matches);
     const results = [];
     for (const match of matches) {
       // const { id, filename, event, response } = match;
@@ -181,7 +179,6 @@ module.exports.checkfaceagain = async (req, res) => {
         method: 'patch',
         url: `http://0.0.0.0:${SERVER.PORT}${UI.PATH}/api/match/reprocess/${id}`,
       });
-      console.log('match data', data);
       results.push(data);
     }
     res.send({ results });
@@ -194,13 +191,11 @@ module.exports.checkfaceagain = async (req, res) => {
 module.exports.comparetwofaces = async (req, res) => {
   const { URL } = DEEPSTACK;
   const { fn, dates } = req.body;
-  console.log(dates);
   const formattedDates = dates.map((date) => {
     const dateObj = new Date(date);
     const result = dateObj.toISOString().split('T')[0];
     return result;
   });
-  console.log(formattedDates);
   const uploadedImgStream = fs.createReadStream(`${STORAGE.TMP.PATH}/${fn}`);
   try {
     const db = database.connect();
@@ -212,7 +207,6 @@ module.exports.comparetwofaces = async (req, res) => {
       )
       .bind(formattedDates[0], formattedDates[1])
       .all();
-    console.log(matches);
     // const ids = (
     //   await Promise.all(
     //     matches.map(async (match) => {
@@ -281,7 +275,6 @@ module.exports.comparetwofaces = async (req, res) => {
 
 module.exports.savetmpimg = async (req, res) => {
   const { buffer } = req.file;
-  console.log(req.file);
   const filename = `${uuidv4()}.jpg`;
   myfs.writer(`${STORAGE.TMP.PATH}/${filename}`, buffer);
   res.send({ filename });

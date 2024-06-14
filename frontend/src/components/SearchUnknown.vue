@@ -1,12 +1,10 @@
 <!-- eslint-disable vuejs-accessibility/no-autofocus -->
 <template>
-  <Button @click="visible = true" icon="pi pi-search" />
+  <Button @click="visible = true" icon="pi pi-search" class="p-button-sm" />
   <Dialog
     v-model:visible="visible"
     modal
     header="Unknown検索"
-    :style="{ width: '50vw' }"
-    :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     @after-hide="afterHideSearchUnknownDialog"
     @show="showSearchUnknownDialog"
   >
@@ -42,8 +40,8 @@
       </div>
     </div>
     <template v-slot:footer>
-      <Button label="Cancel" outlined @click="visible = false" />
-      <Button label="Search" outlined @click="handleSearch" :loading="searchBtnLoading" icon="pi pi-search" />
+      <Button label="キャンセル" outlined @click="visible = false" />
+      <Button label="検索" outlined @click="handleSearch" :loading="searchBtnLoading" icon="pi pi-search" />
     </template>
   </Dialog>
 </template>
@@ -148,7 +146,7 @@ const showSearchUnknownDialog = () => {
 <style scoped>
 .dialog-content {
   display: grid;
-  grid-template-columns: 6fr 4fr;
+  grid-template-columns: 5fr 5fr;
   gap: 10px;
 }
 </style>

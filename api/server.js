@@ -15,7 +15,7 @@ const opencv = require('./src/util/opencv');
 module.exports.start = async () => {
   config.setup();
   storage.setup();
-  console.log(`Double Take v${version}`);
+  console.log(`WID GUARDIAN v${version}`);
   console.verbose(config());
   validate(config());
   await database.init();

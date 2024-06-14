@@ -412,6 +412,26 @@ export default {
       },
     ];
 
+    if (this.type === 'match') {
+      const { filterNames, startTime, endTime } = this.$route.query;
+      const parsedStartTime = Number(startTime);
+      const parsedEndTime = Number(endTime);
+      if (filterNames) {
+        this.selected.names = JSON.parse(filterNames);
+      }
+      // const selectedNames = filterNames ? JSON.parse(filterNames) : [...this.$props.dropdowns];
+      // this.selected.names = selectedNames;
+      let arr = [];
+      if (startTime && endTime && !Number.isNaN(parsedStartTime) && !Number.isNaN(parsedEndTime)) {
+        console.log('test');
+        const starttime = new Date(parseInt(startTime, 10));
+        const endtime = new Date(parseInt(endTime, 10));
+        arr = [starttime, endtime];
+      }
+      this.filters.datetime = [...arr];
+      this.emitter.emit('updateFilter');
+    }
+
     if (this.type === 'train') {
       this.folder = this.$route.query.name;
 
@@ -544,7 +564,7 @@ export default {
       // const date = new Date(this.filters.datetime[0]);
       // const convertDate = date.toISOString();
       // console.log(convertDate);
-      console.log('filters', this.filters);
+      // console.log('filters', this.filters);
     },
   },
   watch: {

@@ -4,7 +4,7 @@ module.exports = {
   pages: {
     index: {
       entry: 'src/main.js',
-      title: 'Double Take',
+      title: 'WID GUARDIAN',
     },
   },
   devServer: {

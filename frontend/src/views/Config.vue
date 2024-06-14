@@ -253,7 +253,7 @@ export default {
     },
     doubleTake: {
       status: null,
-      name: 'Double Take',
+      name: 'WID GUARDIAN',
       tooltip: `v${version}`,
     },
     mqtt: {

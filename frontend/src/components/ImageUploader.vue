@@ -4,11 +4,18 @@
     :multiple="true"
     :fileLimit="1"
     accept="image/*"
-    :maxFileSize="1000000"
+    :maxFileSize="1000000000"
     @select="onSelectedFiles"
     ref="ImgUploadRef"
     customUpload
     @uploader="myUploader"
+    :pt="{
+      content: {
+        style: {
+          padding: '1rem',
+        },
+      },
+    }"
   >
     <template v-slot:header>
       <h3>顔写真</h3>
@@ -99,7 +106,6 @@ const onRemoveTemplatingFile = (file, removeFileCallback, index) => {
 };
 
 const onSelectedFiles = (event) => {
-  console.log(event.files);
   files.value = event.files;
   emit('SelectedFile', files.value[0]);
 };

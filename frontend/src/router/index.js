@@ -81,7 +81,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title ? `${to.meta.title} | Double Take` : 'Double Take';
+  document.title = to.meta.title ? `${to.meta.title} | WID GUARDIAN` : 'WID GUARDIAN';
   next();
 });
 

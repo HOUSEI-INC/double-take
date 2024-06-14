@@ -48,7 +48,6 @@ module.exports.get = async (req, res) => {
   const limit = UI.PAGINATION.LIMIT;
   const { sinceId, page, matchedIds } = req.query;
   const filters = tryParseJSON(req.query.filters);
-  console.log(matchedIds);
   const db = database.connect();
 
   if (matchedIds) {
@@ -167,7 +166,6 @@ module.exports.get = async (req, res) => {
 
 module.exports.delete = async (req, res) => {
   const { ids } = req.body;
-  console.log(req.body);
   if (ids.length) {
     const db = database.connect();
     const files = db

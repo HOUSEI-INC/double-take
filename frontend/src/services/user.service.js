@@ -18,7 +18,6 @@ export const UserService = {
           return { id, name, staffNum, department, fileKey };
         }),
       );
-      console.log(result);
       return result;
     } catch (error) {
       console.error(error);

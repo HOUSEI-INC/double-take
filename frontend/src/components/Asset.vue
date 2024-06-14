@@ -1,6 +1,19 @@
 <template>
   <div class="wrapper" :class="{ disabled: disabled }">
-    <Card>
+    <Card
+      :pt="{
+        footer: {
+          style: {
+            paddingTop: '0.5rem',
+          },
+        },
+        body: {
+          style: {
+            padding: '0.5rem',
+          },
+        },
+      }"
+    >
       <template v-slot:header>
         <div style="position: relative">
           <div class="open-link">
@@ -44,14 +57,13 @@
       <template v-slot:content>
         <div v-if="type === 'match'">
           <DataTable :value="results" class="p-datatable-sm" responsiveLayout="scroll">
-            <Column header="検知器">
+            <Column header="カメラ">
               <template v-slot:body="slotProps">
                 <div class="p-d-block" style="position: relative">
                   <Badge
-                    :value="slotProps.data.detector"
+                    :value="asset.camera"
                     :severity="slotProps.data.match ? 'success' : 'danger'"
                     class="clickable"
-                    style="padding-right: 18px"
                     :class="{ selected: selectedDetector?.index === slotProps.index }"
                     @click="
                       selectedDetector =
@@ -60,12 +72,12 @@
                           : { index: slotProps.index, result: slotProps.data }
                     "
                   />
-                  <div :class="'icon ' + slotProps.data.detector"></div>
+                  <!-- <div :class="'icon ' + slotProps.data.detector"></div> -->
                 </div>
               </template>
             </Column>
             <Column field="name" header="氏名"></Column>
-            <Column header="%">
+            <Column header="類似度">
               <template v-slot:body="slotProps">
                 <div
                   v-if="getCheckValue('confidence', slotProps.data.checks)"
@@ -74,10 +86,10 @@
                 >
                   {{ slotProps.data.confidence }}
                 </div>
-                <div v-else>{{ slotProps.data.confidence || '-' }}</div>
+                <div v-else>{{ `${slotProps.data.confidence}%` || '-' }}</div>
               </template>
             </Column>
-            <Column header="ボックス">
+            <Column header="サイズ">
               <template v-slot:body="slotProps">
                 <div
                   v-if="getCheckValue('box area', slotProps.data.checks)"
@@ -92,7 +104,7 @@
           </DataTable>
         </div>
         <div v-if="type === 'train' && asset.results.length">
-          <div v-for="(detection, index) in asset.results" :key="detection" class="p-d-inline-block badge-holder">
+          <!-- <div v-for="(detection, index) in asset.results" :key="detection" class="p-d-inline-block badge-holder">
             <Badge
               :value="detection.detector"
               :severity="
@@ -106,7 +118,7 @@
               :class="{ selected: selectedDetector?.index === index }"
               @click="selectedDetector = selectedDetector?.index === index ? null : { index, result: detection }"
             />
-          </div>
+          </div> -->
         </div>
         <div v-else-if="type === 'train'">
           <Badge value="untrained" severity="danger" class="p-mb-3" />
@@ -116,7 +128,7 @@
       </template>
       <template v-slot:footer>
         <div style="position: relative">
-          <div class="p-d-flex p-jc-between p-ai-center">
+          <!-- <div class="p-d-flex p-jc-between p-ai-center">
             <div v-if="type === 'match'" class="p-mb-3">
               <Badge v-if="asset.isTrained" value="trained" severity="success" />
               <Badge v-if="asset.camera" :value="asset.camera" />
@@ -132,10 +144,10 @@
                 <Badge :value="mask.value.replace(/_/g, ' ') + ': ' + mask.probability + '%'" />
               </div>
             </div>
-          </div>
-          <div class="p-d-block" style="width: calc(100% - 40px)">
-            <small v-if="type === 'match'" v-tooltip.right="formatTime(asset.createdAt)" style="cursor: pointer">{{
-              createdAt.ago
+          </div> -->
+          <div class="p-d-block" style="width: calc(100% - 40px); padding-bottom: 0.5rem">
+            <small v-if="type === 'match'" v-tooltip.right="createdAt.ago" style="cursor: pointer">{{
+              formatTime(asset.createdAt)
             }}</small>
             <small
               v-if="type === 'match' && updatedAt"
@@ -143,9 +155,9 @@
               v-tooltip.right="formatTime(asset.updatedAt)"
               style="cursor: pointer"
             >
-              {{ updatedAt ? `(${updatedAt.ago}更新)` : '' }}
+              {{ updatedAt ? `(${updatedAt.ago}に再認証)` : '' }}
             </small>
-            <small v-if="type === 'train'">{{ asset.name }}</small>
+            <p v-if="type === 'train'" style="margin: 0; font-weight: bold">{{ asset.name }}</p>
           </div>
           <Button
             v-if="type === 'match'"

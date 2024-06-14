@@ -79,7 +79,7 @@
     <Dialog
       v-model:visible="userDialog"
       :style="{ width: '450px' }"
-      header="User"
+      header="ユーザ"
       :modal="true"
       class="p-fluid"
       @hide="hideUserDialog"
@@ -219,7 +219,7 @@ const filters = ref({
 const submitted = ref(false);
 
 onMounted(async () => {
-  console.log(Constants().sshHost);
+  // console.log(Constants().sshHost);
   const data = await UserService.getUsers();
   users.value = data;
   store.setUsers(users.value);

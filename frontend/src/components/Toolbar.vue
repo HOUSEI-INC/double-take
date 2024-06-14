@@ -6,7 +6,7 @@
     <div v-if="updateAvailable" class="version p-ml-auto p-mr-2" v-tooltip.left="`Update Available`">
       <div class="icon" @click="dockerHub"></div>
     </div>
-    <div class="double-take-menu-wrapper p-d-flex" @click="toggleMenu">
+    <!-- <div class="double-take-menu-wrapper p-d-flex" @click="toggleMenu">
       <i class="pi p-mr-1 pi-angle-down p-as-center" style="height: 14px; overflow: hidden"></i>
       Double Take
       <Menu
@@ -44,7 +44,7 @@
           <Button label="Yes" :disabled="isDisabled" @click="updatePassword" />
         </template>
       </Dialog>
-    </div>
+    </div> -->
   </div>
 </template>
 

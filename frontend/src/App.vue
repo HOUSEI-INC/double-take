@@ -1,7 +1,7 @@
 <template>
   <div id="app-wrapper">
     <div class="loading p-d-flex p-jc-center" :class="{ loaded, hidden, dark }">
-      <img alt="Double Take" class="p-d-block" :src="require('@/assets/img/icon.svg')" style="width: 100px" />
+      <img alt="WID GUARDIAN" class="p-d-block" :src="require('@/assets/img/icon.svg')" style="width: 100px" />
     </div>
     <Toast position="bottom-left" />
     <ConfirmDialog />
@@ -24,7 +24,7 @@ import Toolbar from '@/components/Toolbar.vue';
 import '@/assets/font-awesome/css/all.min.css';
 
 export default {
-  name: 'Double Take',
+  name: 'WID GUARDIAN',
   components: {
     Toast,
     ConfirmDialog,
